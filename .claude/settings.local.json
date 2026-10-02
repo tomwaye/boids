@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/python -c \"import numpy; print\\(numpy.__version__\\)\")",
+      "Bash(SDL_VIDEODRIVER=dummy .venv/bin/python -c ' *)"
+    ]
+  }
+}
