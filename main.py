@@ -7,6 +7,8 @@ BG_COLOR = (15, 15, 25)
 RED = (255,0,0)
 BLACK = (0,0,0)
 
+ALIGNMENT_WEIGHT = 2
+
 class Boid:
     def __init__(self):
         self.pos = pygame.Vector2(WIDTH*numpy.random.random(), HEIGHT*numpy.random.random())
@@ -17,7 +19,7 @@ class Boid:
         self.size = pygame.Vector2(10,10)
         self.detection_radius = pygame.Vector2(200, 200)
         self.neighbours = []
-        self.flock_heading = pygame.Vector2()
+        
 
     def draw(self,screen):
         pygame.draw.rect(screen,self.color,(self.pos, self.size))
@@ -39,7 +41,7 @@ class Boid:
             self.pos.y = HEIGHT - self.size.y
             self.direction.y *= -1
 
-    def check_neighbours(self, boids):
+    def check_neighbours(self, boids, dt):
         for boid in boids:
             if self.pos.distance_to(boid.pos) <= self.detection_radius.x:
                 if boid not in self.neighbours and boid is not self:
@@ -47,7 +49,14 @@ class Boid:
             else:
                 if boid in self.neighbours:
                     self.neighbours.remove(boid)
-        
+        self.flock_heading = pygame.Vector2() 
+        for n in self.neighbours:
+            self.flock_heading += n.direction
+
+        if len(self.neighbours) != 0:
+            self.flock_heading = self.flock_heading / len(self.neighbours)
+            self.direction += (self.flock_heading - self.direction ) * dt * ALIGNMENT_WEIGHT
+            self.direction = self.direction.normalize()
 
     def debug(self,screen):
         self.color = RED
@@ -75,7 +84,7 @@ def main():
 
         screen.fill(BG_COLOR)
         for boid in boids:
-            boid.check_neighbours(boids)
+            boid.check_neighbours(boids, dt)
 
         for boid in boids:
             boid.draw(screen)
