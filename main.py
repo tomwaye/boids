@@ -13,6 +13,8 @@ SEPARATION_WEIGHT = 3
 
 SEPARATION_RADIUS = 50
 
+NUM_BOIDS = 100
+
 class Boid:
     def __init__(self):
         self.pos = pygame.Vector2(WIDTH*numpy.random.random(), HEIGHT*numpy.random.random())
@@ -29,7 +31,12 @@ class Boid:
         
 
     def draw(self,screen):
-        pygame.draw.rect(screen,self.color,(self.pos, self.size))
+        side = pygame.Vector2(-self.direction.y, self.direction.x)
+        nose = self.pos + self.direction * 10
+        back = self.pos - self.direction * 5
+        left = back + side * 5
+        right = back - side * 5
+        pygame.draw.polygon(screen, self.color, [nose, left, right])
 
     def move(self,dt):
         self.pos.x += self.speed*self.direction.x*dt
@@ -112,7 +119,7 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Boids")
     clock = pygame.time.Clock()
-    boids = [Boid() for _ in range(50)]
+    boids = [Boid() for _ in range(NUM_BOIDS)]
 
     running = True
     while running:
